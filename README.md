@@ -146,7 +146,7 @@
 | 运行内存 | ~290 MB |
 | 平台 | Windows / macOS / Linux |
 | 免安装 | 支持 Portable |
-| 价格 | 免费开源 |
+| 价格 | 免费 |
 | 联系 | hku1@qq.com |
 
 ---
