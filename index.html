@@ -1,0 +1,1749 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Horsepower — AI 原生浏览器</title>
+    <meta name="description" content="AI 原生浏览器：浏览器 · 办公套件 · 终端 · 文件管理器 · 代码编辑器 · AI 智能体 — 融为一体">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --c1: #4f46e5;
+            --c2: #0d9488;
+            --c3: #dc2626;
+            --page: #fdfdfc;
+            --panel: #ffffff;
+            --muted: #f5f5f4;
+            --line: #e7e5e4;
+            --txt: #1c1917;
+            --txt2: #57534e;
+            --txt3: #a8a29e;
+            --font: 'Noto Sans SC', system-ui, sans-serif;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font);
+            background: var(--page);
+            color: var(--txt);
+            line-height: 1.75;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .w {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* ---------- 导航 ---------- */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: rgba(253, 253, 252, .92);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--line);
+        }
+
+        header .w {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 52px;
+        }
+
+        .brand {
+            font-weight: 900;
+            font-size: .95rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .brand em {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            background: linear-gradient(135deg, var(--c1), var(--c2));
+            color: #fff;
+            font-style: normal;
+            font-size: .7rem;
+            font-weight: 900;
+            text-align: center;
+            line-height: 24px;
+        }
+
+        .hd-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .hd-links a {
+            font-size: .8rem;
+            color: var(--txt2);
+            font-weight: 500;
+        }
+
+        .hd-links a:hover {
+            color: var(--txt);
+        }
+
+        .hd-dl {
+            padding: 5px 14px;
+            border-radius: 6px;
+            background: var(--c1);
+            color: #fff !important;
+            font-weight: 700;
+            font-size: .78rem;
+        }
+
+        /* ---------- 首屏 ---------- */
+        .hero {
+            padding: 100px 0 70px;
+            text-align: center;
+        }
+
+        .hero small {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 999px;
+            border: 1px solid var(--line);
+            font-size: .7rem;
+            font-weight: 700;
+            color: var(--c1);
+            margin-bottom: 18px;
+            background: var(--panel);
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 5.5vw, 3.4rem);
+            font-weight: 900;
+            letter-spacing: -.03em;
+            line-height: 1.12;
+            margin-bottom: 16px;
+        }
+
+        .hero h1 b {
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--c1), var(--c2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero>p {
+            max-width: 620px;
+            margin: 0 auto 28px;
+            color: var(--txt2);
+            font-size: .95rem;
+        }
+
+        .btns {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .bt {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: .85rem;
+            border: none;
+            cursor: pointer;
+            transition: .2s;
+        }
+
+        .bt-a {
+            background: var(--c1);
+            color: #fff;
+        }
+
+        .bt-a:hover {
+            filter: brightness(1.1);
+        }
+
+        .bt-b {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            color: var(--txt);
+        }
+
+        .bt-b:hover {
+            background: var(--muted);
+        }
+
+        .nums {
+            display: flex;
+            gap: 36px;
+            justify-content: center;
+            margin-top: 48px;
+            padding-top: 36px;
+            border-top: 1px solid var(--line);
+        }
+
+        .nums dt {
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--c1);
+        }
+
+        .nums dd {
+            font-size: .7rem;
+            color: var(--txt3);
+            font-weight: 500;
+        }
+
+        /* ---------- 通用区域 ---------- */
+        .blk {
+            padding: 64px 0;
+        }
+
+        .blk-g {
+            background: var(--muted);
+        }
+
+        .blk-hd {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .blk-hd .label {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 999px;
+            font-size: .65rem;
+            font-weight: 700;
+            letter-spacing: .04em;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .lbl-v {
+            background: rgba(79, 70, 229, .08);
+            color: var(--c1);
+        }
+
+        .lbl-t {
+            background: rgba(13, 148, 136, .08);
+            color: var(--c2);
+        }
+
+        .lbl-r {
+            background: rgba(220, 38, 38, .08);
+            color: var(--c3);
+        }
+
+        .blk-hd h2 {
+            font-size: clamp(1.3rem, 2.8vw, 1.9rem);
+            font-weight: 900;
+            letter-spacing: -.02em;
+            margin-bottom: 8px;
+        }
+
+        .blk-hd p {
+            font-size: .88rem;
+            color: var(--txt2);
+            max-width: 520px;
+            margin: 0 auto;
+        }
+
+        /* ---------- 痛点 ---------- */
+        .pain {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 28px 32px;
+            border-radius: 12px;
+            background: var(--panel);
+            border: 1px solid var(--line);
+        }
+
+        .pain p {
+            font-size: .88rem;
+            color: var(--txt2);
+        }
+
+        .pain p+p {
+            margin-top: 12px;
+        }
+
+        .pain strong {
+            color: var(--txt);
+        }
+
+        /* ---------- 创新网格 ---------- */
+        .i6 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .i6-item {
+            padding: 22px;
+            border-radius: 12px;
+            background: var(--panel);
+            border: 1px solid var(--line);
+            transition: box-shadow .25s, transform .25s;
+        }
+
+        .i6-item:hover {
+            box-shadow: 0 6px 24px rgba(0, 0, 0, .06);
+            transform: translateY(-2px);
+        }
+
+        .i6-item .n {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            display: grid;
+            place-items: center;
+            color: #fff;
+            font-size: .65rem;
+            font-weight: 900;
+            margin-bottom: 12px;
+        }
+
+        .i6-item h3 {
+            font-size: .92rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .i6-item p {
+            font-size: .78rem;
+            color: var(--txt2);
+            line-height: 1.55;
+        }
+
+        /* ---------- 办公双列 ---------- */
+        .g2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .g2-c {
+            padding: 28px;
+            border-radius: 12px;
+            background: var(--panel);
+            border: 1px solid var(--line);
+        }
+
+        .g2-c.span {
+            grid-column: 1 / -1;
+        }
+
+        .g2-c h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .g2-c h3 code {
+            font-family: var(--font);
+            font-size: .6rem;
+            font-weight: 700;
+            padding: 1px 7px;
+            border-radius: 999px;
+            margin-left: 4px;
+        }
+
+        .g2-c p {
+            font-size: .84rem;
+            color: var(--txt2);
+            margin-bottom: 10px;
+            line-height: 1.65;
+        }
+
+        .g2-c ul {
+            list-style: none;
+        }
+
+        .g2-c li {
+            font-size: .8rem;
+            color: var(--txt2);
+            line-height: 1.55;
+            padding-left: 14px;
+            position: relative;
+        }
+
+        .g2-c li::before {
+            content: '›';
+            position: absolute;
+            left: 0;
+            color: var(--c1);
+            font-weight: 800;
+        }
+
+        .g2-c li+li {
+            margin-top: 4px;
+        }
+
+        /* ---------- 技能 4列 ---------- */
+        .sk4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .sk4-item {
+            padding: 18px 14px;
+            border-radius: 10px;
+            text-align: center;
+            background: var(--panel);
+            border: 1px solid var(--line);
+            transition: .2s;
+        }
+
+        .sk4-item:hover {
+            border-color: var(--c1);
+        }
+
+        .sk4-item .e {
+            font-size: 1.4rem;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .sk4-item h4 {
+            font-size: .78rem;
+            font-weight: 700;
+        }
+
+        .sk4-item p {
+            font-size: .66rem;
+            color: var(--txt3);
+            margin-top: 2px;
+        }
+
+        /* ---------- 对比表 ---------- */
+        .cmp {
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid var(--line);
+            background: var(--panel);
+            margin-top: 24px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: .74rem;
+            white-space: nowrap;
+        }
+
+        th {
+            padding: 8px 12px;
+            text-align: left;
+            font-weight: 700;
+            background: var(--muted);
+            border-bottom: 1px solid var(--line);
+            font-size: .68rem;
+            letter-spacing: .02em;
+        }
+
+        td {
+            padding: 7px 12px;
+            border-bottom: 1px solid var(--line);
+            color: var(--txt2);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        td:first-child {
+            font-weight: 600;
+            color: var(--txt);
+        }
+
+        .hi {
+            background: rgba(79, 70, 229, .05);
+            color: var(--c1);
+            font-weight: 700;
+        }
+
+        /* ---------- 场景 ---------- */
+        .sc2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .sc {
+            padding: 24px;
+            border-radius: 12px;
+            background: var(--panel);
+            border: 1px solid var(--line);
+        }
+
+        .sc:nth-child(5) {
+            grid-column: 1 / -1;
+            max-width: 480px;
+            justify-self: center;
+            width: 100%;
+        }
+
+        .sc h3 {
+            font-size: .92rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .sc p {
+            font-size: .8rem;
+            color: var(--txt2);
+            line-height: 1.6;
+        }
+
+        /* ---------- 安全 ---------- */
+        .s3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .s3-item {
+            padding: 22px;
+            border-radius: 12px;
+            background: var(--panel);
+            border: 1px solid var(--line);
+        }
+
+        .s3-item h3 {
+            font-size: .88rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .s3-item p {
+            font-size: .78rem;
+            color: var(--txt2);
+            line-height: 1.55;
+        }
+
+        /* ---------- 产品信息 ---------- */
+        .info-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 10px;
+            margin-top: 24px;
+        }
+
+        .info-box {
+            padding: 16px;
+            border-radius: 10px;
+            text-align: center;
+            background: var(--panel);
+            border: 1px solid var(--line);
+        }
+
+        .info-box .k {
+            font-size: .65rem;
+            color: var(--txt3);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+        }
+
+        .info-box .v {
+            font-size: .92rem;
+            font-weight: 700;
+            margin-top: 2px;
+        }
+
+        /* ---------- 下载区 ---------- */
+        .dl-sec {
+            padding: 64px 0;
+            text-align: center;
+        }
+
+        .dl-sec h2 {
+            font-size: clamp(1.4rem, 3vw, 2rem);
+            font-weight: 900;
+            letter-spacing: -.02em;
+            margin-bottom: 10px;
+        }
+
+        .dl-sec>p {
+            color: var(--txt2);
+            margin: 0 auto 24px;
+            max-width: 400px;
+            font-size: .9rem;
+        }
+
+        .dl-meta {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 24px;
+            font-size: .76rem;
+            color: var(--txt3);
+        }
+
+        /* ---------- 底部 ---------- */
+        footer {
+            border-top: 1px solid var(--line);
+            padding: 32px 0 20px;
+        }
+
+        footer .w {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .ft-l {
+            font-weight: 700;
+            font-size: .82rem;
+        }
+
+        .ft-cp {
+            font-size: .68rem;
+            color: var(--txt3);
+            margin-top: 2px;
+        }
+
+        .ft-r {
+            display: flex;
+            gap: 16px;
+        }
+
+        .ft-r a {
+            font-size: .76rem;
+            color: var(--txt3);
+        }
+
+        .ft-r a:hover {
+            color: var(--txt);
+        }
+
+        /* ---------- 响应 ---------- */
+        @media (max-width: 768px) {
+
+            .i6,
+            .s3 {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .g2,
+            .sc2 {
+                grid-template-columns: 1fr;
+            }
+
+            .g2-c.span {
+                grid-column: auto;
+            }
+
+            .sk4 {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .nums {
+                flex-wrap: wrap;
+                gap: 20px;
+            }
+
+            .hd-links a:not(.hd-dl) {
+                display: none;
+            }
+
+            .sc:nth-child(5) {
+                grid-column: auto;
+                max-width: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+
+            .i6,
+            .s3,
+            .sk4 {
+                grid-template-columns: 1fr;
+            }
+
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+        }
+
+        /* ---------- 动画 ---------- */
+        .an {
+            opacity: 0;
+            transform: translateY(16px);
+            transition: opacity .5s ease, transform .5s ease;
+        }
+
+        .an.v {
+            opacity: 1;
+            transform: none;
+        }
+
+        /* ---------- 模拟浏览器 ---------- */
+        .mock {
+            max-width: 900px;
+            margin: 48px auto 0;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #3a3a50;
+            background: #1e1e2e;
+            box-shadow: 0 24px 64px rgba(0,0,0,.35), 0 0 0 1px rgba(124,124,240,.08);
+            font-family: 'Segoe UI', 'Microsoft YaHei', system-ui, sans-serif;
+            color: #e0e0e0;
+            font-size: 13px;
+            text-align: left;
+        }
+
+        /* -- titlebar -- */
+        .mock-tbar {
+            display: flex;
+            align-items: center;
+            height: 38px;
+            background: #1e1e2e;
+            border-bottom: 1px solid #3a3a50;
+            padding: 0 8px;
+            gap: 2px;
+            user-select: none;
+        }
+        .mock-tab {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            height: 30px;
+            padding: 0 14px;
+            border-radius: 8px 8px 0 0;
+            font-size: 12px;
+            color: #a0a0b0;
+            background: transparent;
+            white-space: nowrap;
+            max-width: 180px;
+            position: relative;
+        }
+        .mock-tab.active {
+            background: #343450;
+            color: #e0e0e0;
+        }
+        .mock-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 14px;
+            right: 14px;
+            height: 2px;
+            background: #7c7cf0;
+            border-radius: 2px 2px 0 0;
+        }
+        .mock-tab-icon {
+            width: 14px;
+            height: 14px;
+            border-radius: 3px;
+            flex-shrink: 0;
+        }
+        .mock-tab-close {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            font-size: 10px;
+            color: #707080;
+            margin-left: auto;
+        }
+        .mock-tab-new {
+            width: 28px;
+            height: 28px;
+            display: grid;
+            place-items: center;
+            border-radius: 6px;
+            color: #707080;
+            font-size: 14px;
+            margin-left: 2px;
+        }
+        .mock-drag {
+            flex: 1;
+            min-width: 40px;
+        }
+        .mock-wc {
+            display: flex;
+            gap: 0;
+            margin-left: auto;
+        }
+        .mock-wc span {
+            width: 40px;
+            height: 30px;
+            display: grid;
+            place-items: center;
+            font-size: 11px;
+            color: #a0a0b0;
+        }
+        .mock-wc .close-btn { color: #ff5555; }
+
+        /* -- navbar -- */
+        .mock-nav {
+            display: flex;
+            align-items: center;
+            height: 42px;
+            padding: 0 10px;
+            gap: 4px;
+            background: #1e1e2e;
+            border-bottom: 1px solid #3a3a50;
+        }
+        .mock-nav-btn {
+            width: 30px;
+            height: 30px;
+            display: grid;
+            place-items: center;
+            border-radius: 6px;
+            color: #a0a0b0;
+            font-size: 13px;
+            flex-shrink: 0;
+        }
+        .mock-url {
+            flex: 1;
+            height: 30px;
+            border-radius: 15px;
+            background: #2a2a3e;
+            border: 1px solid #3a3a50;
+            display: flex;
+            align-items: center;
+            padding: 0 14px;
+            gap: 8px;
+            margin: 0 6px;
+            min-width: 0;
+        }
+        .mock-url-lock {
+            color: #50fa7b;
+            font-size: 11px;
+            flex-shrink: 0;
+        }
+        .mock-url-text {
+            font-size: 12px;
+            color: #a0a0b0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .mock-url-star {
+            margin-left: auto;
+            color: #707080;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+        .mock-nav-right {
+            display: flex;
+            gap: 2px;
+        }
+        .mock-nav-btn.accent { color: #7c7cf0; }
+
+        /* -- body -- */
+        .mock-body {
+            display: flex;
+            height: 340px;
+        }
+
+        /* -- sidebar (左侧边栏) -- */
+        .mock-side {
+            width: 44px;
+            background: #1e1e2e;
+            border-right: 1px solid #3a3a50;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px 0;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+        .mock-side-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: grid;
+            place-items: center;
+            font-size: 14px;
+            color: #707080;
+            position: relative;
+        }
+        .mock-side-btn.active {
+            background: rgba(124,124,240,.15);
+            color: #7c7cf0;
+        }
+        .mock-side-sep {
+            width: 22px;
+            height: 1px;
+            background: #3a3a50;
+            margin: 4px 0;
+        }
+
+        /* -- content 主区域 -- */
+        .mock-main {
+            flex: 1;
+            background: #22223a;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        /* homepage 模拟 */
+        .mock-hp {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 32px 24px 16px;
+            position: relative;
+            overflow: hidden;
+        }
+        .mock-hp::before {
+            content: '';
+            position: absolute;
+            top: -60px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 300px;
+            height: 200px;
+            background: radial-gradient(ellipse, rgba(124,124,240,.12), transparent 70%);
+            pointer-events: none;
+        }
+        .mock-hp-logo {
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: 4px;
+            color: #7c7cf0;
+            margin-bottom: 4px;
+            position: relative;
+        }
+        .mock-hp-sub {
+            font-size: 10px;
+            color: #707080;
+            letter-spacing: 6px;
+            margin-bottom: 20px;
+        }
+        .mock-hp-search {
+            width: 80%;
+            max-width: 420px;
+            height: 36px;
+            border-radius: 18px;
+            background: rgba(255,255,255,.06);
+            border: 1px solid #3a3a50;
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            gap: 8px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+        }
+        .mock-hp-search-icon {
+            color: #707080;
+            font-size: 13px;
+            flex-shrink: 0;
+        }
+        .mock-hp-search-text {
+            font-size: 12px;
+            color: #707080;
+        }
+        .mock-hp-cards {
+            display: flex;
+            gap: 8px;
+            width: 80%;
+            max-width: 420px;
+        }
+        .mock-hp-card {
+            flex: 1;
+            padding: 10px;
+            border-radius: 8px;
+            background: rgba(255,255,255,.04);
+            border: 1px solid #3a3a50;
+            backdrop-filter: blur(10px);
+        }
+        .mock-hp-card-title {
+            font-size: 10px;
+            font-weight: 700;
+            color: #a0a0b0;
+            margin-bottom: 4px;
+        }
+        .mock-hp-card-line {
+            height: 5px;
+            border-radius: 3px;
+            background: rgba(255,255,255,.06);
+            margin-bottom: 3px;
+        }
+        .mock-hp-card-line.s { width: 60%; }
+        .mock-hp-card-line.m { width: 80%; }
+
+        /* -- AI panel -- */
+        .mock-ai {
+            width: 240px;
+            border-left: 1px solid #3a3a50;
+            background: #1e1e2e;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+        .mock-ai-hd {
+            height: 40px;
+            padding: 0 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid #3a3a50;
+            font-size: 12px;
+            font-weight: 700;
+            color: #7c7cf0;
+        }
+        .mock-ai-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #50fa7b;
+        }
+        .mock-ai-model {
+            font-size: 11px;
+            color: #a0a0b0;
+            font-weight: 400;
+        }
+        .mock-ai-msgs {
+            flex: 1;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            overflow: hidden;
+        }
+        .mock-ai-msg {
+            padding: 8px 10px;
+            border-radius: 10px;
+            font-size: 11px;
+            line-height: 1.5;
+            max-width: 92%;
+        }
+        .mock-ai-msg.user {
+            background: #7c7cf0;
+            color: #fff;
+            align-self: flex-end;
+            border-radius: 12px 4px 12px 12px;
+        }
+        .mock-ai-msg.bot {
+            background: #343450;
+            color: #e0e0e0;
+            border-left: 3px solid #7c7cf0;
+            border-radius: 4px 10px 10px 10px;
+        }
+        .mock-ai-input {
+            margin: 0 10px 10px;
+            height: 30px;
+            border-radius: 8px;
+            background: #2a2a3e;
+            border: 1px solid #3a3a50;
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            gap: 6px;
+        }
+        .mock-ai-input-text {
+            font-size: 11px;
+            color: #707080;
+            flex: 1;
+        }
+        .mock-ai-send {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #7c7cf0;
+            display: grid;
+            place-items: center;
+            color: #fff;
+            font-size: 10px;
+        }
+
+        /* -- statusbar -- */
+        .mock-status {
+            height: 22px;
+            background: rgba(30,30,46,.92);
+            border-top: 1px solid #3a3a50;
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            gap: 12px;
+            font-size: 10px;
+            color: #707080;
+        }
+        .mock-status-dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: #50fa7b;
+        }
+
+        @media (max-width: 768px) {
+            .mock { margin: 32px -8px 0; }
+            .mock-side, .mock-ai { display: none; }
+            .mock-body { height: 240px; }
+            .mock-tab:not(.active) { display: none; }
+            .mock-nav-right .mock-nav-btn:nth-child(n+3) { display: none; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="w">
+            <a href="#" class="brand"><em>H</em> Horsepower</a>
+            <div class="hd-links">
+                <a href="#innovations">创新</a>
+                <a href="#office">办公</a>
+                <a href="#ai">AI</a>
+                <a href="#compare">对比</a>
+                <a href="#dl" class="hd-dl">下载</a>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="w">
+            <small>AI 原生浏览器 · 免费开源</small>
+            <h1><b>AI 原生浏览器</b></h1>
+            <p>浏览器 · 办公套件 · 终端 · 文件管理器 · 代码编辑器 · AI 智能体 — 融为一体</p>
+            <div class="btns">
+                <a href="https://github.com/hpview/Horsepower-Browser/releases" target="_blank" class="bt bt-a">下载 Horsepower</a>
+                <a href="https://github.com/hpview/Horsepower-Browser" target="_blank" class="bt bt-b">GitHub</a>
+            </div>
+            <dl class="nums">
+                <div>
+                    <dt>8</dt>
+                    <dd>AI 技能系统</dd>
+                </div>
+                <div>
+                    <dt>3</dt>
+                    <dd>自研办公引擎</dd>
+                </div>
+                <div>
+                    <dt>60+</dt>
+                    <dd>搜索引擎</dd>
+                </div>
+                <div>
+                    <dt>23+</dt>
+                    <dd>本地工具</dd>
+                </div>
+                <div>
+                    <dt>20</dt>
+                    <dd>子智能体并行</dd>
+                </div>
+            </dl>
+
+            <!-- Mock Browser -->
+            <div class="mock an">
+                <!-- Titlebar -->
+                <div class="mock-tbar">
+                    <div class="mock-tab active">
+                        <span class="mock-tab-icon" style="background:linear-gradient(135deg,#7c7cf0,#38bdf8)"></span>
+                        <span>首页</span>
+                        <span class="mock-tab-close">×</span>
+                    </div>
+                    <div class="mock-tab">
+                        <span class="mock-tab-icon" style="background:#4ade80"></span>
+                        <span>工作文档.hdoc</span>
+                        <span class="mock-tab-close">×</span>
+                    </div>
+                    <div class="mock-tab">
+                        <span class="mock-tab-icon" style="background:#fbbf24"></span>
+                        <span>数据分析.xlsx</span>
+                    </div>
+                    <div class="mock-tab-new">+</div>
+                    <div class="mock-drag"></div>
+                    <div class="mock-wc">
+                        <span>─</span>
+                        <span>□</span>
+                        <span class="close-btn">×</span>
+                    </div>
+                </div>
+                <!-- Navbar -->
+                <div class="mock-nav">
+                    <div class="mock-nav-btn">◂</div>
+                    <div class="mock-nav-btn">▸</div>
+                    <div class="mock-nav-btn">↻</div>
+                    <div class="mock-nav-btn">⌂</div>
+                    <div class="mock-url">
+                        <span class="mock-url-lock">🔒</span>
+                        <span class="mock-url-text">horsepower://homepage</span>
+                        <span class="mock-url-star">☆</span>
+                    </div>
+                    <div class="mock-nav-right">
+                        <div class="mock-nav-btn">🔖</div>
+                        <div class="mock-nav-btn">🕐</div>
+                        <div class="mock-nav-btn">⬇</div>
+                        <div class="mock-nav-btn accent">🤖</div>
+                        <div class="mock-nav-btn">⚙</div>
+                    </div>
+                </div>
+                <!-- Body -->
+                <div class="mock-body">
+                    <!-- Sidebar icons -->
+                    <div class="mock-side">
+                        <div class="mock-side-btn active" title="主页">🏠</div>
+                        <div class="mock-side-btn" title="文件管理">📁</div>
+                        <div class="mock-side-btn" title="终端">⌨</div>
+                        <div class="mock-side-btn" title="代码编辑器">✏️</div>
+                        <div class="mock-side-sep"></div>
+                        <div class="mock-side-btn" title="日历">📅</div>
+                        <div class="mock-side-btn" title="备忘">📋</div>
+                        <div class="mock-side-btn" title="工具站">🧩</div>
+                    </div>
+                    <!-- Homepage content -->
+                    <div class="mock-main">
+                        <div class="mock-hp">
+                            <div class="mock-hp-logo">HORSEPOWER</div>
+                            <div class="mock-hp-sub">AI 原生浏览器</div>
+                            <div class="mock-hp-search">
+                                <span class="mock-hp-search-icon">🔍</span>
+                                <span class="mock-hp-search-text">搜索或输入网址…</span>
+                            </div>
+                            <div class="mock-hp-cards">
+                                <div class="mock-hp-card">
+                                    <div class="mock-hp-card-title">📋 待办</div>
+                                    <div class="mock-hp-card-line m"></div>
+                                    <div class="mock-hp-card-line s"></div>
+                                </div>
+                                <div class="mock-hp-card">
+                                    <div class="mock-hp-card-title">📅 日程</div>
+                                    <div class="mock-hp-card-line m"></div>
+                                    <div class="mock-hp-card-line s"></div>
+                                </div>
+                                <div class="mock-hp-card">
+                                    <div class="mock-hp-card-title">📝 便签</div>
+                                    <div class="mock-hp-card-line m"></div>
+                                    <div class="mock-hp-card-line s"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- AI Panel -->
+                    <div class="mock-ai">
+                        <div class="mock-ai-hd">
+                            <span class="mock-ai-dot"></span>
+                            <span>AI 助手</span>
+                            <span class="mock-ai-model">GLM5.1</span>
+                        </div>
+                        <div class="mock-ai-msgs">
+                            <div class="mock-ai-msg user">帮我搜索 2025 年新能源汽车市场趋势并生成报告</div>
+                            <div class="mock-ai-msg bot">已通过多引擎并行搜索，整合了 12 篇报告内容…<br><br>✅ 报告已生成并写入文档编辑器。</div>
+                            <div class="mock-ai-msg user">导出为 Word 发到桌面</div>
+                            <div class="mock-ai-msg bot">✅ 已导出为 市场趋势报告.docx 并保存到桌面。</div>
+                        </div>
+                        <div class="mock-ai-input">
+                            <span class="mock-ai-input-text">输入消息或语音指令…</span>
+                            <span class="mock-ai-send">↑</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Status bar -->
+                <div class="mock-status">
+                    <span class="mock-status-dot"></span>
+                    <span>就绪</span>
+                    <span style="margin-left:auto">8 个技能可用</span>
+                    <span>MCP 已连接</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 痛点 -->
+    <section class="blk blk-g" id="problem">
+        <div class="w">
+            <div class="blk-hd">
+                <div class="label lbl-r">我们在解决什么问题</div>
+                <h2>工具太多太散，AI 止步于对话框</h2>
+            </div>
+            <div class="pain an">
+                <p>今天的知识工作者面临的核心矛盾，不是工具不够多，而是<strong>工具太多、太散</strong>。浏览器开着二十个标签，文档编辑器、代码编辑器、终端、各类 AI
+                    对话框分散在不同应用——每一次上下文切换，都意味着注意力的中断和信息的流失。</p>
+                <p>更深层的问题：即便是最先进的 AI
+                    助手，在这套分散的工具体系中依然只是"又一个需要手动切换过去的应用"。它能回答问题，但不能替你打开文件；能生成报告，但不能帮你保存到正确位置；能搜索信息，但不能跨标签页整合结果。</p>
+                <p><strong>AI 的能力边界终结于对话框，或局限于单一文件类型。</strong>Horsepower 要打破的，正是这堵墙。</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 六大创新 -->
+    <section class="blk" id="innovations">
+        <div class="w">
+            <div class="blk-hd">
+                <div class="label lbl-v">核心创新</div>
+                <h2>六大创新点</h2>
+            </div>
+            <div class="i6">
+                <div class="i6-item an">
+                    <div class="n" style="background:var(--c1)">01</div>
+                    <h3>AI 多模态全流程引擎</h3>
+                    <p>八大技能系统让 AI 不止于对话——操控浏览器、终端、文件系统、办公套件，全程执行</p>
+                </div>
+                <div class="i6-item an">
+                    <div class="n" style="background:var(--c2)">02</div>
+                    <h3>自研办公引擎</h3>
+                    <p>文档/PPT/表格引擎完全自研，与 Office 高度兼容，AI 可搜索→提取→分析→排版→导出</p>
+                </div>
+                <div class="i6-item an">
+                    <div class="n" style="background:#2563eb">03</div>
+                    <h3>创新主页与搜索系统</h3>
+                    <p>60+ 搜索引擎 + AI 引擎 + 小组件侧边栏，Ctrl+Enter 多引擎并行搜索</p>
+                </div>
+                <div class="i6-item an">
+                    <div class="n" style="background:#ea580c">04</div>
+                    <h3>自研多窗口分屏引擎</h3>
+                    <p>超越 Edge 分屏，达到平板桌面模式级别灵活布局，最多 3 个独立 AI 子窗口</p>
+                </div>
+                <div class="i6-item an">
+                    <div class="n" style="background:var(--c3)">05</div>
+                    <h3>端侧多模态原生调用</h3>
+                    <p>C# WinRT 原生 OCR/语音/TTS，端侧零延迟，数据全程不出设备</p>
+                </div>
+                <div class="i6-item an">
+                    <div class="n" style="background:#7c3aed">06</div>
+                    <h3>零配置消息桥接</h3>
+                    <p>登录即接入微信/飞书/WhatsApp/Discord，笔记本化身 24h AI 服务器</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 办公引擎 -->
+    <section class="blk blk-g" id="office">
+        <div class="w">
+            <div class="blk-hd">
+                <div class="label lbl-t">自研引擎</div>
+                <h2>三大办公引擎，完全自研</h2>
+                <p>不依赖 Office 或 Google Docs。本地运行，AI 可端到端自动化操控——不仅生成文本，更能控制格式、插入图表、调整排版。</p>
+            </div>
+            <div class="g2">
+                <div class="g2-c an">
+                    <h3>📄 文档编辑器 <code style="background:rgba(79,70,229,.08);color:var(--c1)">BlockEngine</code></h3>
+                    <p>自研图文混排引擎，12 列栅格 + 4 种布局模式。25+ 编辑操作，浮动工具栏选中即触发。</p>
+                    <ul>
+                        <li>HDOC 原生格式（JSON v1 / ZIP v2），12 版本历史</li>
+                        <li>导出 Word (.docx) / PDF / HTML / Markdown</li>
+                        <li>AI 可控制格式、插入内容、调整排版</li>
+                    </ul>
+                </div>
+                <div class="g2-c an">
+                    <h3>📊 演示文稿编辑器 <code style="background:rgba(13,148,136,.08);color:var(--c2)">OOXML</code></h3>
+                    <p>查看/编辑/演示三种模式，支持 16:9 和 4:3。自研 OOXML 解析器，与 Office 高度兼容。</p>
+                    <ul>
+                        <li>文本/形状/图像/表格/背景完整解析</li>
+                        <li>PPTX 标准格式 + HPPT 原生格式（百分比坐标，分辨率无关）</li>
+                        <li>支持 HTML 格式导出</li>
+                    </ul>
+                </div>
+                <div class="g2-c span an">
+                    <h3>📈 电子表格引擎 <code style="background:rgba(234,88,12,.08);color:#ea580c">ECharts</code></h3>
+                    <p>多工作表、合并/冻结/排序/筛选、公式栏。6 种图表（柱状/条形/折线/面积/饼图/散点），ECharts 渲染引擎驱动。最大 5000 行 × 200 列实时渲染。XLSX
+                        标准格式导出，与 Excel 兼容。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI 技能 -->
+    <section class="blk" id="ai">
+        <div class="w">
+            <div class="blk-hd">
+                <div class="label lbl-r">AI 引擎</div>
+                <h2>八大技能系统，从对话走向执行</h2>
+                <p>技能共享同一上下文——AI 可在一次会话中"打开网页→提取表格→写入表格→生成图表→嵌入文档→导出 Word"。</p>
+            </div>
+            <div class="sk4">
+                <div class="sk4-item an"><span class="e">🌐</span>
+                    <h4>BrowserSkill</h4>
+                    <p>浏览器操控 · 搜索 · 标签组 · 分屏</p>
+                </div>
+                <div class="sk4-item an"><span class="e">⌨️</span>
+                    <h4>TerminalSkill</h4>
+                    <p>PowerShell / Bash + 安全沙箱</p>
+                </div>
+                <div class="sk4-item an"><span class="e">📁</span>
+                    <h4>FileSkill</h4>
+                    <p>文件读写 · 创建 · 搜索 · 导航</p>
+                </div>
+                <div class="sk4-item an"><span class="e">🖼️</span>
+                    <h4>WebpageSkill</h4>
+                    <p>HTML/CSS/JS 实时生成</p>
+                </div>
+                <div class="sk4-item an"><span class="e">✏️</span>
+                    <h4>EditorSkill</h4>
+                    <p>Monaco + 自研办公引擎联动</p>
+                </div>
+                <div class="sk4-item an"><span class="e">📋</span>
+                    <h4>MemoSkill</h4>
+                    <p>待办 / 日程 / 笔记 / 定时</p>
+                </div>
+                <div class="sk4-item an"><span class="e">🧠</span>
+                    <h4>SubAgentSkill</h4>
+                    <p>最多 20 个子智能体并行</p>
+                </div>
+                <div class="sk4-item an"><span class="e">⚡</span>
+                    <h4>Autocomplete</h4>
+                    <p>AI Diff 追踪 + 变更管理</p>
+                </div>
+            </div>
+
+            <div class="g2" style="margin-top:32px">
+                <div class="g2-c an">
+                    <h3>🔌 MCP 开放协议</h3>
+                    <p>零外部依赖，纯 JSON-RPC 2.0。stdio + HTTP 双传输。兼容 Claude Desktop / Cursor / VS Code 配置格式，一键导入社区工具服务器。</p>
+                </div>
+                <div class="g2-c an">
+                    <h3>🧭 适配性引导设计</h3>
+                    <p>渐进式披露——端侧轻量模型看精简指令集，云端大模型获完整能力描述。上下文感知压缩。模型无关兼容，从 7B 到百亿级均可驱动完整技能系统。</p>
+                </div>
+                <div class="g2-c an">
+                    <h3>🔒 端侧优先 · 隐私闭环</h3>
+                    <p>C# WinRT 原生 OCR/语音/TTS，端侧零延迟。端侧 LLM 驱动完整 Agent 工作流——数据不出设备，断网可用。不绑定任何 AI 服务商。</p>
+                </div>
+                <div class="g2-c an">
+                    <h3>🎛️ 四级执行安全</h3>
+                    <p>全自动（低风险搜索和阅读）→ 延迟审核 → 关键确认（文件写入/终端命令）→ 完全禁用。用户始终握有最终决策权。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 竞品对比 -->
+    <section class="blk blk-g" id="compare">
+        <div class="w">
+            <div class="blk-hd">
+                <div class="label lbl-v">竞品对比</div>
+                <h2>AI Agent 与多模态能力</h2>
+                <p>★★★★★ 极强 / ★★★★☆ 强 / ★★★☆☆ 中等 / ★★☆☆☆ 弱 / — 不具备</p>
+            </div>
+            <div class="cmp an">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>能力</th>
+                            <th class="hi">Horsepower</th>
+                            <th>ChatGPT</th>
+                            <th>Cursor</th>
+                            <th>Manus</th>
+                            <th>Copilot(M365)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>AI 对话</td>
+                            <td class="hi">★★★★☆</td>
+                            <td>★★★★★</td>
+                            <td>★★★★☆</td>
+                            <td>★★★★☆</td>
+                            <td>★★★★☆</td>
+                        </tr>
+                        <tr>
+                            <td>浏览器操控</td>
+                            <td class="hi">★★★★★</td>
+                            <td>★★★☆☆</td>
+                            <td>—</td>
+                            <td>★★★★★</td>
+                            <td>—</td>
+                        </tr>
+                        <tr>
+                            <td>终端命令</td>
+                            <td class="hi">★★★★☆</td>
+                            <td>—</td>
+                            <td>★★★★★</td>
+                            <td>★★★★☆</td>
+                            <td>—</td>
+                        </tr>
+                        <tr>
+                            <td>文件读写</td>
+                            <td class="hi">★★★★★</td>
+                            <td>★☆☆☆☆</td>
+                            <td>★★★★☆</td>
+                            <td>★★★★☆</td>
+                            <td>★★☆☆☆</td>
+                        </tr>
+                        <tr>
+                            <td>子Agent并行</td>
+                            <td class="hi">★★★★★</td>
+                            <td>—</td>
+                            <td>—</td>
+                            <td>★★★★☆</td>
+                            <td>—</td>
+                        </tr>
+                        <tr>
+                            <td>端侧离线</td>
+                            <td class="hi">★★★★★</td>
+                            <td>—</td>
+                            <td>—</td>
+                            <td>—</td>
+                            <td>—</td>
+                        </tr>
+                        <tr>
+                            <td>数据不出设备</td>
+                            <td class="hi">★★★★★</td>
+                            <td>—</td>
+                            <td>—</td>
+                            <td>—</td>
+                            <td>★☆☆☆☆</td>
+                        </tr>
+                        <tr>
+                            <td>OCR/STT</td>
+                            <td class="hi">★★★★☆</td>
+                            <td>★★★★☆</td>
+                            <td>—</td>
+                            <td>—</td>
+                            <td>★★☆☆☆</td>
+                        </tr>
+                        <tr>
+                            <td>办公引擎</td>
+                            <td class="hi">★★★★☆</td>
+                            <td>★★☆☆☆</td>
+                            <td>—</td>
+                            <td>—</td>
+                            <td>★★★★★</td>
+                        </tr>
+                        <tr>
+                            <td>搜索引擎集成</td>
+                            <td class="hi">★★★★★</td>
+                            <td>★★☆☆☆</td>
+                            <td>—</td>
+                            <td>—</td>
+                            <td>—</td>
+                        </tr>
+                        <tr>
+                            <td>消息桥接</td>
+                            <td class="hi">★★★★★</td>
+                            <td>—</td>
+                            <td>—</td>
+                            <td>—</td>
+                            <td>—</td>
+                        </tr>
+                        <tr>
+                            <td>MCP 协议</td>
+                            <td class="hi">★★★★★</td>
+                            <td>—</td>
+                            <td>★★★★★</td>
+                            <td>—</td>
+                            <td>—</td>
+                        </tr>
+                        <tr>
+                            <td>本地工具站</td>
+                            <td class="hi">★★★★★</td>
+                            <td>—</td>
+                            <td>—</td>
+                            <td>—</td>
+                            <td>—</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- 应用场景 -->
+    <section class="blk" id="scenarios">
+        <div class="w">
+            <div class="blk-hd">
+                <div class="label lbl-t">应用场景</div>
+                <h2>从搜索到交付，一句话完成</h2>
+            </div>
+            <div class="sc2">
+                <div class="sc an">
+                    <h3>📚 研究者：一键知识整合</h3>
+                    <p>"帮我搜集近三年大语言模型幻觉问题的研究，整理成文献综述初稿。"AI 并行打开学术数据库、提取摘要与结论、写入文档编辑器、生成带章节初稿。数小时→二十分钟。</p>
+                </div>
+                <div class="sc an">
+                    <h3>✍️ 内容创作者：多源工作台</h3>
+                    <p>RSS 资讯同步→AI 多源提取热点→生成选题简报→起草框架→实时润色→"改成短视频脚本"在同一窗口完成格式转换。全程没打开第二个应用。</p>
+                </div>
+                <div class="sc an">
+                    <h3>💼 职场新人：AI 辅助成长</h3>
+                    <p>multi-search 多源提取竞品信息→AI 生成对比表格→数据可视化→自动生成 PPT 骨架→填充结论一键导出。被 AI 带着走完完整工作流。</p>
+                </div>
+                <div class="sc an">
+                    <h3>🔐 端侧隐私办公</h3>
+                    <p>端侧 LLM 驱动分析，数据不上传。WinRT OCR 端侧识别扫描件，SAPI 离线转写录音。断网全部 Agent 技能可工作。隐私零泄露。</p>
+                </div>
+                <div class="sc an">
+                    <h3>📱 消息桥接：24h AI 服务器</h3>
+                    <p>微信发"查下周末高铁票价"→笔记本 AI 自动搜索 12306 整理时刻表回传。飞书发 Excel→AI 打开分析生成图表摘要回传。笔记本=24h 个人 AI 服务器。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 安全 -->
+    <section class="blk blk-g">
+        <div class="w">
+            <div class="blk-hd">
+                <div class="label lbl-r">安全架构</div>
+                <h2>从内核到数据，层层防护</h2>
+            </div>
+            <div class="s3">
+                <div class="s3-item an">
+                    <h3>🛡️ 内核级安全</h3>
+                    <p>Electron Fuses 编译期锁定，ASAR 完整性验证。Ed25519 C++ 原生签名验证（Native Guard），防调试检测。</p>
+                </div>
+                <div class="s3-item an">
+                    <h3>🔐 数据加密</h3>
+                    <p>AES-256-GCM 本地密码存储。Session 级路径授权 + realpath 防符号链接绕过。</p>
+                </div>
+                <div class="s3-item an">
+                    <h3>🧹 内容安全</h3>
+                    <p>内容消毒处理，MCP 命令注入防护。Chrome 扩展 30+ 权限中文翻译 + 高危权限拦截。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 交互设计 -->
+    <section class="blk">
+        <div class="w">
+            <div class="blk-hd">
+                <div class="label lbl-v">交互设计</div>
+                <h2>创新主页 · 12+ 主题 · 全面玻璃态</h2>
+            </div>
+            <div class="g2">
+                <div class="g2-c an">
+                    <h3>🏠 创新主页</h3>
+                    <p>不是空白新标签页，而是集搜索、AI 和日常管理于一体的工作台首屏。60+ 搜索引擎覆盖 11 个类别，搜索框可直接触发 AI 对话，小组件侧边栏（待办/日程/便签）触手可及。</p>
+                </div>
+                <div class="g2-c an">
+                    <h3>🎨 视觉风格</h3>
+                    <p>12+ 内置主题（7 纯色 + 5 渐变），全面 Glassmorphism 特效——面板、菜单、对话框 16-20px 模糊 + 半透明背景。支持壁纸、自定义色彩和透明度调节。</p>
+                </div>
+                <div class="g2-c an">
+                    <h3>🪟 自研分屏引擎</h3>
+                    <p>标签页自由拖拽、标签组折叠管理。灵活分屏（二分/三分/自定义比例），最多 3 个独立 AI 子窗口同时运行。</p>
+                </div>
+                <div class="g2-c an">
+                    <h3>🧩 23+ 本地工具站</h3>
+                    <p>JSON 格式化、正则测试、Base64 编解码、颜色拾取、Markdown 预览等——零网络、离线可用、隐私无忧。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 产品信息 -->
+    <section class="blk blk-g">
+        <div class="w">
+            <div class="blk-hd">
+                <div class="label lbl-t">产品信息</div>
+                <h2>轻量 · 便携 · 开箱即用</h2>
+            </div>
+            <div class="info-row">
+                <div class="info-box an">
+                    <div class="k">版本</div>
+                    <div class="v">v1.0.0</div>
+                </div>
+                <div class="info-box an">
+                    <div class="k">技术栈</div>
+                    <div class="v">Electron + Chromium + Node.js + C#</div>
+                </div>
+                <div class="info-box an">
+                    <div class="k">安装包</div>
+                    <div class="v">~120 MB</div>
+                </div>
+                <div class="info-box an">
+                    <div class="k">安装后</div>
+                    <div class="v">~500 MB</div>
+                </div>
+                <div class="info-box an">
+                    <div class="k">运行内存</div>
+                    <div class="v">~290 MB</div>
+                </div>
+                <div class="info-box an">
+                    <div class="k">平台</div>
+                    <div class="v">Windows · macOS · Linux</div>
+                </div>
+                <div class="info-box an">
+                    <div class="k">免安装</div>
+                    <div class="v">✅ Portable</div>
+                </div>
+                <div class="info-box an">
+                    <div class="k">价格</div>
+                    <div class="v">免费开源</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 下载 -->
+    <section class="dl-sec" id="dl">
+        <div class="w">
+            <h2>开始使用 Horsepower</h2>
+            <p>一个应用取代桌面上的六个。安装即用，零配置上手。</p>
+            <div class="btns">
+                <a href="https://github.com/hpview/Horsepower-Browser/releases" target="_blank" class="bt bt-a">下载 Windows 版</a>
+                <a href="https://github.com/hpview/Horsepower-Browser" target="_blank" class="bt bt-b">查看源码</a>
+            </div>
+            <div class="dl-meta">
+                <span>🖥️ Windows / macOS / Linux</span>
+                <span>📦 ~120 MB</span>
+                <span>⚡ ~290 MB 内存</span>
+                <span>🔓 免费</span>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="w">
+            <div>
+                <div class="ft-l">Horsepower 马上浏览</div>
+                <div class="ft-cp">&copy; 2025 Horsepower Team</div>
+            </div>
+            <div class="ft-r">
+                <a href="https://github.com/hpview/Horsepower-Browser" target="_blank">GitHub</a>
+                <a href="https://github.com/hpview/Horsepower-Browser/releases" target="_blank">下载</a>
+                <a href="https://github.com/hpview/Horsepower-Browser/issues" target="_blank">反馈</a>
+                <a href="mailto:hku1@qq.com">联系</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const ob = new IntersectionObserver(es => {
+            es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('v'); ob.unobserve(e.target); } });
+        }, { threshold: 0.05, rootMargin: '0px 0px -20px 0px' });
+        document.querySelectorAll('.an').forEach(el => ob.observe(el));
+
+        document.querySelectorAll('a[href^="#"]').forEach(a => {
+            a.addEventListener('click', e => {
+                const t = document.querySelector(a.getAttribute('href'));
+                if (t) { e.preventDefault(); t.scrollIntoView({ behavior: 'smooth' }); }
+            });
+        });
+
+        window.addEventListener('scroll', () => {
+            document.querySelector('header').style.boxShadow =
+                scrollY > 30 ? '0 1px 4px rgba(0,0,0,.05)' : 'none';
+        }, { passive: true });
+    </script>
+</body>
+
+</html>
